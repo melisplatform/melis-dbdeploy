@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<phpunit bootstrap="bootstrap.php"
+         cbackupStaticAttributes="false"
+         colors="true"
+         convertErrorsToExceptions="false"
+         convertNoticesToExceptions="false"
+         convertWarningsToExceptions="false"
+         processIsolation="false"
+         stopOnFailure="false"
+         syntaxCheck="false"
+         verbose="true">
+    <testsuites>
+        <testsuite name="MelisDbDeployTest">
+            <directory suffix=".php">./MelisDbDeployTest</directory>
+        </testsuite>
+    </testsuites>
+</phpunit>
