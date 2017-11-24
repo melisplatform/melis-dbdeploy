@@ -1,0 +1,37 @@
+{
+  "name": "melisplatform/melis-dbdeploy",
+  "description": "Melis Platform Database deployment module",
+  "type": "melisplatform-module",
+  "license": "OSL-3.0",
+  "homepage": "https://github.com/melisplatform/melis-dbdeploy",
+  "support": {
+    "source": "https://github.com/melisplatform/melis-dbdeploy",
+    "issues": "https://github.com/melisplatform/melis-dbdeploy/issues"
+  },
+  "keywords": [
+    "cms",
+    "melis",
+    "zf2",
+    "module"
+  ],
+  "extra": {
+    "module-name": "MelisDbDeploy",
+    "dbdeploy": true
+  },
+  "require": {
+    "php": ">=5.4",
+    "melisplatform/melis-core": "~2.2.7",
+    "zendframework/zendframework": "~2.5.3",
+    "phing/phing": "~2.16.0"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "~5.7",
+    "php-mock/php-mock": "~2.0.0",
+    "psy/psysh": "@stable"
+  },
+  "autoload": {
+    "psr-4": {
+      "MelisDbDeploy\\": "src/"
+    }
+  }
+}
