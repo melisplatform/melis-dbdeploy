@@ -24,7 +24,7 @@ class MelisDbDeployDiscoveryService extends MelisCoreGeneralService
     protected $Composer;
 
     /**
-     * Processing all Melis Platform Modules that neeed upgrade database
+     * Processing all Melis Platform Modules that need upgrade database
      * @param Composer $composer
      */
     public function processing(Composer $composer)
@@ -42,15 +42,52 @@ class MelisDbDeployDiscoveryService extends MelisCoreGeneralService
         $deployService->applyDeltaPath(realpath('cache' . DIRECTORY_SEPARATOR . self::CACHE_DELTAS_PATH));
     }
 
+    public function copyDeltas2($composer, $module)
+    {
+        $repos = $composer->getRepositoryManager()->getLocalRepository();
+        $packages = array_filter($repos->getPackages(), function($package) {
+            /** @var CompletePackage $package */
+//            return $package->getType()==='melisplatform-module' &&
+//                array_key_exists('module-name', $package->getExtra());
+            return $package->getType()==='melisplatform-module';
+        });
+
+        foreach($packages as $package) {
+            $packageExtra = $package->getExtra();
+
+            $text = print_r($package, true);
+            file_put_contents('readme.txt', $text, FILE_APPEND);
+
+//            if($packageExtra)
+//                continue;
+
+            if($packageExtra['module-name'] == $module)
+                continue;
+
+
+            if (in_array('dbdeploy', $packageExtra) && true === $packageExtra['dbdeploy']) {
+                break;
+            }
+        }
+
+
+        return;
+
+
+    }
+
     /**
      * Find melis delta migration that match
      * condition of extra dbdeploy
      */
-    protected function copyDeltas()
+    protected function copyDeltas($composer, $module = null)
     {
         $vendorDir = $this->Composer->getConfig()->get('vendor-dir');
+
         $packages = $this->getLocalPackages();
+
         $deltas = [];
+
 
         foreach ($packages as $package) {
             $vendor = explode('/', $package->getName(), 2);
@@ -72,6 +109,7 @@ class MelisDbDeployDiscoveryService extends MelisCoreGeneralService
         }
 
         return $deltas;
+
     }
 
     /**
