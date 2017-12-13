@@ -17,7 +17,7 @@ class MelisDbDeployDeployServiceFactory implements FactoryInterface
 {
     public function createService(ServiceLocatorInterface $sl)
     {
-        $service = new MelisDbDeployDeployService();
+        $service   = new MelisDbDeployDeployService();
         $service->setServiceLocator($sl);
 
         return $service;

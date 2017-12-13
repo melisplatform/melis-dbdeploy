@@ -14,7 +14,7 @@ use Zend\ModuleManager\ModuleManager;
 use Zend\Mvc\Service\ServiceManagerConfig;
 use Zend\ServiceManager\ServiceManager;
 use Zend\Stdlib\ArrayUtils;
-use Composer\Script\Event;
+
 
 class Module
 {
@@ -51,16 +51,15 @@ class Module
      * Trigger the processing of discovery patch and deploy sql migration
      * @param Event $event
      */
-    public static function run(Event $event)
+    public static function run()
     {
-        $composer = $event->getComposer();
         $smConfig = include dirname(__DIR__) . DIRECTORY_SEPARATOR . 'config' . DIRECTORY_SEPARATOR . 'module.config.php';
         $serviceManager = new ServiceManager(new ServiceManagerConfig($smConfig['service_manager']));
 
         /** @var MelisDbDeployDiscoveryService $discovery */
         try {
           $discovery = $serviceManager->get('MelisDbDeployDiscoveryService');
-          $discovery->processing($composer);
+          $discovery->processing();
         } catch (ConfigFileNotFoundException $exception) {
           // If missing config file, due nothing
           return;
