@@ -93,7 +93,7 @@ class MelisDbDeployDiscoveryService extends MelisCoreGeneralService
             if(!is_null($module) && !empty($module)) {
                 if(trim($extra['module-name']) === trim($module)) {
                     if (in_array('dbdeploy', $extra) && true === $extra['dbdeploy']) {
-                        $deltas[] = static::copyDeltasFromPackage($package, $vendorDir);
+                        $deltas = static::copyDeltasFromPackage($package, $vendorDir);
                     }
                     break;
                 }
@@ -132,7 +132,7 @@ class MelisDbDeployDiscoveryService extends MelisCoreGeneralService
         $sp = DIRECTORY_SEPARATOR;
         $path = $vendorDir . $sp . $package->getName() . $sp . 'install/sql/dbdeploy';
 
-        echo $path.PHP_EOL;
+
         if (false === file_exists($path)) {
             return [];
         }

@@ -110,9 +110,16 @@ class MelisDbDeployDeployService extends MelisCoreGeneralService
         $execTask->setUserid($this->appConfig['db']['username']);
         $execTask->setPassword($this->appConfig['db']['password']);
         $execTask->setSrc($file);
-        $execTask->main();
+        try {
 
-        unlink($filename);
+            $execTask->main();
+            if(file_exists($filename))
+                unlink($filename);
+        }catch(\Exception $e) {
+
+        }
+
+
     }
 
     protected function prepare()
