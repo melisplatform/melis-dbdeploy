@@ -103,6 +103,7 @@ class MelisDbDeployDeployService extends MelisCoreGeneralService
         $filename = realpath(static::OUTPUT_FILENAME);
 
         $file = new \PhingFile($filename);
+
         $execTask = new \PDOSQLExecTask();
         $execTask->setProject($this->dbDeployTask->getProject());
         $execTask->setOwningTarget($this->dbDeployTask->getOwningTarget());
@@ -110,6 +111,7 @@ class MelisDbDeployDeployService extends MelisCoreGeneralService
         $execTask->setUserid($this->appConfig['db']['username']);
         $execTask->setPassword($this->appConfig['db']['password']);
         $execTask->setSrc($file);
+
         try {
 
             $execTask->main();
