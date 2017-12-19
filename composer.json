@@ -20,7 +20,6 @@
   },
   "require": {
     "php": ">=5.4",
-    "melisplatform/melis-core": "~2.2.7",
     "zendframework/zendframework": "~2.5.3",
     "phing/phing": "~2.16.0"
   },
