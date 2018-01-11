@@ -11,16 +11,33 @@ namespace MelisDbDeploy\Service;
 
 use Composer\Composer;
 use Composer\Package\PackageInterface;
-use MelisCore\Service\MelisCoreGeneralService;
+use Zend\ServiceManager\ServiceLocatorAwareInterface;
+use Zend\ServiceManager\ServiceLocatorInterface;
 
-class MelisDbDeployDiscoveryService extends MelisCoreGeneralService
+class MelisDbDeployDiscoveryService implements ServiceLocatorAwareInterface
 {
+    /**
+     * @var ServiceManager
+     */
+    public $serviceLocator;
+
     const VENDOR            = 'melisplatform';
     const CACHE_DELTAS_PATH = 'dbdeploy';
 
     public function __construct($composer)
     {
         $this->setComposer($composer);
+    }
+
+    public function setServiceLocator(ServiceLocatorInterface $sl)
+    {
+        $this->serviceLocator = $sl;
+        return $this;
+    }
+
+    public function getServiceLocator()
+    {
+        return $this->serviceLocator;
     }
 
     /**
