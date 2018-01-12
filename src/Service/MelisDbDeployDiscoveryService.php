@@ -65,10 +65,18 @@ class MelisDbDeployDiscoveryService implements ServiceLocatorAwareInterface
      * Processing all Melis Platform Modules that need upgrade database
      * @param String  $module
      */
-    public function processing($module = null)
+    public function processing($module = null, $database = array())
     {
         /** @var MelisDbDeployDeployService $deployService */
         $deployService = $this->getServiceLocator()->get('MelisDbDeployDeployService');
+
+        if($database) {
+            $deployService->setDbPrepare('mysql',
+                $database['hostname'],
+                $database['database'],
+                $database['username'],
+                $database['password']);
+        }
 
         if (false === $deployService->isInstalled()) {
             $deployService->install();
