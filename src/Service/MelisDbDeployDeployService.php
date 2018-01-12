@@ -151,9 +151,7 @@ class MelisDbDeployDeployService extends MelisCoreGeneralService
         if($databaseConfig) {
             $appConfig = $databaseConfig;
         }
-
-        print_r($databaseConfig);
-
+        
         $this->appConfig = $appConfig;
 
         $this->db = new Adapter($appConfig['db'] + [
