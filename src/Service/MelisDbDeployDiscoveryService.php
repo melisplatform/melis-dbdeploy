@@ -111,15 +111,20 @@ class MelisDbDeployDiscoveryService implements ServiceLocatorAwareInterface
 
             $extra = $package->getExtra();
 
-            if (!in_array('dbdeploy', $extra) || true !== $extra['dbdeploy']) {
-                continue;
-            }
 
-            if(!is_null($module) && !empty($module)) {
+            /**
+             * Uncomment the line below to enforce dbdeploy to install or update only
+             * whenever there's an extra dbdeploy configuration in their composer.json
+             */
+            //if (!in_array('dbdeploy', $extra) || true !== $extra['dbdeploy']) {
+            //    continue;
+            //}
+
+            if(!is_null($module) || !empty($module)) {
                 if(trim($extra['module-name']) === trim($module)) {
-                    if (in_array('dbdeploy', $extra) && true === $extra['dbdeploy']) {
-                        $deltas = static::copyDeltasFromPackage($package, $vendorDir);
-                    }
+                    //if (in_array('dbdeploy', $extra) && true === $extra['dbdeploy']) {
+                    $deltas = static::copyDeltasFromPackage($package, $vendorDir);
+                    //}
                     break;
                 }
             }
@@ -156,7 +161,6 @@ class MelisDbDeployDiscoveryService implements ServiceLocatorAwareInterface
     {
         $sp = DIRECTORY_SEPARATOR;
         $path = $vendorDir . $sp . $package->getName() . $sp . 'install/dbdeploy';
-
 
         if (false === file_exists($path)) {
             return [];
