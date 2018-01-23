@@ -163,7 +163,10 @@ class MelisDbDeployDiscoveryService implements ServiceLocatorAwareInterface
         $path = $vendorDir . $sp . $package->getName() . $sp . 'install/dbdeploy';
 
         if (false === file_exists($path)) {
-            return [];
+            $path = $vendorDir . $sp . $package->getName() . $sp . 'install/sql/dbdeploy';
+            if(false == file_exists($path)) {
+                return [];
+            }
         }
 
         $files = glob("$path/*.sql");
