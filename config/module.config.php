@@ -11,7 +11,7 @@ return [
     'service_manager' => [
         'factories' => [
             'MelisDbDeployDiscoveryService' => \MelisDbDeploy\Service\Factory\MelisDbDeployDiscoveryServiceFactory::class,
-            'MelisDbDeployDeployService' => \MelisDbDeploy\Service\Factory\MelisDbDeployDeployServiceFactory::class,
+            'MelisDbDeployDeployService' => MelisDbDeploy\Service\Factory\MelisDbDeployDeployServiceFactory::class,
         ],
     ],
 ];

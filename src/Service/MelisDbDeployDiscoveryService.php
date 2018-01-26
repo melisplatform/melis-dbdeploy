@@ -11,16 +11,33 @@ namespace MelisDbDeploy\Service;
 
 use Composer\Composer;
 use Composer\Package\PackageInterface;
-use MelisCore\Service\MelisCoreGeneralService;
+use Zend\ServiceManager\ServiceLocatorAwareInterface;
+use Zend\ServiceManager\ServiceLocatorInterface;
 
-class MelisDbDeployDiscoveryService extends MelisCoreGeneralService
+class MelisDbDeployDiscoveryService implements ServiceLocatorAwareInterface
 {
+    /**
+     * @var ServiceManager
+     */
+    public $serviceLocator;
+
     const VENDOR            = 'melisplatform';
     const CACHE_DELTAS_PATH = 'dbdeploy';
 
     public function __construct($composer)
     {
         $this->setComposer($composer);
+    }
+
+    public function setServiceLocator(ServiceLocatorInterface $sl)
+    {
+        $this->serviceLocator = $sl;
+        return $this;
+    }
+
+    public function getServiceLocator()
+    {
+        return $this->serviceLocator;
     }
 
     /**
@@ -57,7 +74,7 @@ class MelisDbDeployDiscoveryService extends MelisCoreGeneralService
             $deployService->install();
         }
 
-        $deltas = $this->copyDeltas($module);
+        $this->copyDeltas($module);
         $deployService->applyDeltaPath(realpath('cache' . DIRECTORY_SEPARATOR . self::CACHE_DELTAS_PATH));
     }
 
@@ -130,7 +147,7 @@ class MelisDbDeployDiscoveryService extends MelisCoreGeneralService
     protected static function copyDeltasFromPackage(PackageInterface $package, $vendorDir)
     {
         $sp = DIRECTORY_SEPARATOR;
-        $path = $vendorDir . $sp . $package->getName() . $sp . 'install/dbdeploy';
+        $path = $vendorDir . $sp . $package->getName() . $sp . 'install/sql/dbdeploy';
 
 
         if (false === file_exists($path)) {
@@ -148,13 +165,12 @@ class MelisDbDeployDiscoveryService extends MelisCoreGeneralService
 
         foreach ($files as $file) {
             copy($file, $deltaPath . basename($file));
-            $deltas[]    = $deltaPath . basename($file);
+            $deltas[] = $deltaPath . basename($file);
         }
 
         if (empty($files)) {
             return [];
         }
-
 
         return $deltas;
     }

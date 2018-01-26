@@ -9,13 +9,14 @@
 
 namespace MelisDbDeploy\Service;
 
-use MelisCore\Service\MelisCoreGeneralService;
 use MelisDbDeploy\ConfigFileNotFoundException;
 use MelisDbDeploy\PhingListener;
 use Zend\Db\Adapter\Adapter;
-
-class MelisDbDeployDeployService extends MelisCoreGeneralService
+use Zend\ServiceManager\ServiceLocatorAwareInterface;
+use Zend\ServiceManager\ServiceLocatorInterface;
+class MelisDbDeployDeployService implements ServiceLocatorAwareInterface
 {
+    public $serviceLocator;
     /**
      *
      * The tablename to use from the database for storing all changes
@@ -45,9 +46,22 @@ class MelisDbDeployDeployService extends MelisCoreGeneralService
      */
     protected $appConfig;
 
+
     public function __construct()
     {
         $this->prepare();
+    }
+
+    public function setServiceLocator(ServiceLocatorInterface $sl)
+    {
+        $this->serviceLocator = $sl;
+
+        return $this;
+    }
+
+    public function getServiceLocator()
+    {
+        return $this->serviceLocator;
     }
 
     public function isInstalled()
@@ -127,41 +141,40 @@ class MelisDbDeployDeployService extends MelisCoreGeneralService
     {
         $configurations = glob("config/autoload/platforms/*.php");
 
-        if (empty($configurations)) {
-            throw new ConfigFileNotFoundException();
+        if (!empty($configurations)) {
+            $path = current($configurations);
+            $appConfig = include $path;
+            $this->appConfig = $appConfig;
+
+            $this->db = new Adapter($appConfig['db'] + [
+                    'driver' => static::DRIVER,
+                ]);
+
+            $cwd = getcwd();
+            set_include_path("$cwd/vendor/phing/phing/classes/");
+
+            $target = new \Target();
+            $target->setName('default');
+
+            $project = new \Project();
+
+            $ctx = new \PhingXMLContext($project);
+            $project->addReference("phing.parsing.context", $ctx);
+
+            $project->addTarget('default', $target);
+            $project->setDefaultTarget('default');
+            $project->addBuildListener(new PhingListener());
+
+            $this->dbDeployTask = new \DbDeployTask();
+            $this->dbDeployTask->setProject($project);
+            $this->dbDeployTask->setUrl($appConfig['db']['dsn']);
+            $this->dbDeployTask->setUserId($appConfig['db']['username']);
+            $this->dbDeployTask->setPassword($appConfig['db']['password']);
+            $this->dbDeployTask->setOutputFile(static::OUTPUT_FILENAME);
+            $this->dbDeployTask->setUndoOutputFile(static::OUTPUT_FILENAME_UNDO);
+            $this->dbDeployTask->setOwningTarget($target);
+            $this->dbDeployTask->setCheckAll(true);
         }
 
-        $path = current($configurations);
-        $appConfig = include $path;
-        $this->appConfig = $appConfig;
-
-        $this->db = new Adapter($appConfig['db'] + [
-                'driver' => static::DRIVER,
-            ]);
-
-        $cwd = getcwd();
-        set_include_path("$cwd/vendor/phing/phing/classes/");
-
-        $target = new \Target();
-        $target->setName('default');
-
-        $project = new \Project();
-
-        $ctx = new \PhingXMLContext($project);
-        $project->addReference("phing.parsing.context", $ctx);
-
-        $project->addTarget('default', $target);
-        $project->setDefaultTarget('default');
-        $project->addBuildListener(new PhingListener());
-
-        $this->dbDeployTask = new \DbDeployTask();
-        $this->dbDeployTask->setProject($project);
-        $this->dbDeployTask->setUrl($appConfig['db']['dsn']);
-        $this->dbDeployTask->setUserId($appConfig['db']['username']);
-        $this->dbDeployTask->setPassword($appConfig['db']['password']);
-        $this->dbDeployTask->setOutputFile(static::OUTPUT_FILENAME);
-        $this->dbDeployTask->setUndoOutputFile(static::OUTPUT_FILENAME_UNDO);
-        $this->dbDeployTask->setOwningTarget($target);
-        $this->dbDeployTask->setCheckAll(true);
     }
 }

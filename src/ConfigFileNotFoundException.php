@@ -1,7 +1,7 @@
 <?php
 
 namespace MelisDbDeploy;
-
-class ConfigFileNotFoundException extends \Exception
+use Exception;
+class ConfigFileNotFoundException extends Exception
 {
 }
