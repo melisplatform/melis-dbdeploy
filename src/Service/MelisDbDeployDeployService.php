@@ -45,17 +45,9 @@ class MelisDbDeployDeployService extends MelisCoreGeneralService
      */
     protected $appConfig;
 
-
-    public function setDbPrepare($dbProvider, $host, $database, $username, $password)
+    public function __construct()
     {
-        $databaseConf = array(
-            'db' => array(
-                'dsn' => "$dbProvider:dbname=$database;host=$host",
-                'username' => $username,
-                'password' => $password
-            )
-        );
-        $this->prepare($databaseConf);
+        $this->prepare();
     }
 
     public function isInstalled()
@@ -121,7 +113,6 @@ class MelisDbDeployDeployService extends MelisCoreGeneralService
         $execTask->setSrc($file);
 
         try {
-
             $execTask->main();
             if(file_exists($filename))
                 unlink($filename);
@@ -132,31 +123,21 @@ class MelisDbDeployDeployService extends MelisCoreGeneralService
 
     }
 
-    protected function prepare($databaseConfig = array())
+    protected function prepare()
     {
-        $configurations = array();
+        $configurations = glob("config/autoload/platforms/*.php");
 
-        if(empty($databaseConfig)) {
-            $configurations = glob("config/autoload/platforms/*.php");
-            if (empty($configurations)) {
-                throw new ConfigFileNotFoundException();
-            }
+        if (empty($configurations)) {
+            throw new ConfigFileNotFoundException();
         }
 
-        if($configurations) {
-            $path = current($configurations);
-            $appConfig = include $path;
-        }
-
-        if($databaseConfig) {
-            $appConfig = $databaseConfig;
-        }
-
+        $path = current($configurations);
+        $appConfig = include $path;
         $this->appConfig = $appConfig;
 
         $this->db = new Adapter($appConfig['db'] + [
                 'driver' => static::DRIVER,
-        ]);
+            ]);
 
         $cwd = getcwd();
         set_include_path("$cwd/vendor/phing/phing/classes/");
