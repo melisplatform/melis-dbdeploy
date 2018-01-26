@@ -147,7 +147,7 @@ class MelisDbDeployDiscoveryService implements ServiceLocatorAwareInterface
     protected static function copyDeltasFromPackage(PackageInterface $package, $vendorDir)
     {
         $sp = DIRECTORY_SEPARATOR;
-        $path = $vendorDir . $sp . $package->getName() . $sp . 'install/sql/dbdeploy';
+        $path = $vendorDir . $sp . $package->getName() . $sp . 'install/dbdeploy';
 
 
         if (false === file_exists($path)) {
