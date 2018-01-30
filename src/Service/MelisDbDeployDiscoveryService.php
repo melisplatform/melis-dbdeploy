@@ -22,7 +22,7 @@ class MelisDbDeployDiscoveryService implements ServiceLocatorAwareInterface
     public $serviceLocator;
 
     const VENDOR            = 'melisplatform';
-    const CACHE_DELTAS_PATH = 'dbdeploy';
+    const CACHE_DELTAS_PATH = 'data';
 
     public function __construct($composer)
     {
@@ -67,6 +67,14 @@ class MelisDbDeployDiscoveryService implements ServiceLocatorAwareInterface
      */
     public function processing($module = null)
     {
+
+        // create dbdeploy folder if not existing
+        $dbDeployPath = $_SERVER['DOCUMENT_ROOT'] . '/../dbdeploy';
+        if(!file_exists($dbDeployPath)) {
+            mkdir($dbDeployPath);
+        }
+
+
         /** @var MelisDbDeployDeployService $deployService */
         $deployService = $this->getServiceLocator()->get('MelisDbDeployDeployService');
 
@@ -75,7 +83,7 @@ class MelisDbDeployDiscoveryService implements ServiceLocatorAwareInterface
         }
 
         $this->copyDeltas($module);
-        $deployService->applyDeltaPath(realpath('cache' . DIRECTORY_SEPARATOR . self::CACHE_DELTAS_PATH));
+        $deployService->applyDeltaPath(realpath('dbdeploy' . DIRECTORY_SEPARATOR . self::CACHE_DELTAS_PATH));
     }
 
 
@@ -155,7 +163,7 @@ class MelisDbDeployDiscoveryService implements ServiceLocatorAwareInterface
         }
 
         $files = glob("$path/*.sql");
-        $deltaPath = 'cache' . $sp . self::CACHE_DELTAS_PATH . $sp;
+        $deltaPath = 'dbdeploy' . $sp . self::CACHE_DELTAS_PATH . $sp;
 
         if (!file_exists($deltaPath)) {
             mkdir($deltaPath, 750);

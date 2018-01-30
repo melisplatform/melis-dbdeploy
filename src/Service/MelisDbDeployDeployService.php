@@ -24,12 +24,11 @@ class MelisDbDeployDeployService implements ServiceLocatorAwareInterface
      *
      * @var string
      */
-    const TABLE_NAME = 'changelog';
+    const TABLE_NAME            = 'changelog';
 
-    const OUTPUT_FILENAME = 'melisplatform-dbdeploy.sql';
-    const OUTPUT_FILENAME_UNDO = 'melisplatform-dbdeploy-reverse.sql';
-
-    const DRIVER = 'pdo';
+    const OUTPUT_FILENAME       = 'melisplatform-dbdeploy.sql';
+    const OUTPUT_FILENAME_UNDO  = 'melisplatform-dbdeploy-reverse.sql';
+    const DRIVER                = 'pdo';
 
     /**
      * @var Adapter
@@ -92,7 +91,7 @@ class MelisDbDeployDeployService implements ServiceLocatorAwareInterface
         \Phing::startup();
 
         $cwd = getcwd();
-        $workingDirectory = $cwd . DIRECTORY_SEPARATOR . 'cache';
+        $workingDirectory = $cwd . DIRECTORY_SEPARATOR . 'dbdeploy';
         chdir($workingDirectory);
 
         if (!file_exists($workingDirectory)) {
