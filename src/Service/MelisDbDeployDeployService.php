@@ -130,7 +130,7 @@ class MelisDbDeployDeployService implements ServiceLocatorAwareInterface
             if(file_exists($filename))
                 unlink($filename);
         }catch(\Exception $e) {
-            echo $e->getMessage();
+            return $e->getMessage();
         }
 
 
