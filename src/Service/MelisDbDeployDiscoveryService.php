@@ -72,6 +72,7 @@ class MelisDbDeployDiscoveryService implements ServiceLocatorAwareInterface
         $dbDeployPath = $_SERVER['DOCUMENT_ROOT'] . '/../dbdeploy';
         if(!file_exists($dbDeployPath)) {
             mkdir($dbDeployPath);
+            chmod($dbDeployPath, 0777);
         }
 
 

@@ -88,6 +88,8 @@ class MelisDbDeployDeployService implements ServiceLocatorAwareInterface
 
     public function applyDeltaPath($deltaPath)
     {
+        chmod($deltaPath, 0777); 
+
         \Phing::startup();
 
         $cwd = getcwd();
