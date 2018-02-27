@@ -112,15 +112,15 @@ class MelisDbDeployDiscoveryService implements ServiceLocatorAwareInterface
 
             $extra = $package->getExtra();
 
-            if (!in_array('dbdeploy', $extra) || true !== $extra['dbdeploy']) {
-                continue;
-            }
+            // if (!in_array('dbdeploy', $extra) || true !== $extra['dbdeploy']) {
+                // continue;
+            // }
 
             if(!is_null($module) && !empty($module)) {
                 if(trim($extra['module-name']) === trim($module)) {
-                    if (in_array('dbdeploy', $extra) && true === $extra['dbdeploy']) {
+                    //if (in_array('dbdeploy', $extra) && true === $extra['dbdeploy']) {
                         $deltas = static::copyDeltasFromPackage($package, $vendorDir);
-                    }
+                    //}
                     break;
                 }
             }
