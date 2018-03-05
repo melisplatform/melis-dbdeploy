@@ -133,7 +133,16 @@ class MelisDbDeployDeployService implements ServiceLocatorAwareInterface
             }
                 
         }catch(\Exception $e) {
-            return $e->getMessage();
+			$path     = $_SERVER['DOCUMENT_ROOT'].'/../dbdeploy/';
+			$logError = false;
+
+			if($logError) {
+                if(file_exists($path)) {
+                    file_put_contents($path . 'dbdeploy_error.log', date('Y-m-d H:i:s') . ': '. $e->getMessage() . PHP_EOL . PHP_EOL, FILE_APPEND);
+                }
+            }
+
+			
         }
 
 
