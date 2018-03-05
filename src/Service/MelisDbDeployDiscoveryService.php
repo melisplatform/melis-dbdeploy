@@ -74,6 +74,10 @@ class MelisDbDeployDiscoveryService implements ServiceLocatorAwareInterface
             mkdir($dbDeployPath);
             chmod($dbDeployPath, 0777);
         }
+		else {
+			chmod($dbDeployPath, 0777);
+		}
+		
 
 
         /** @var MelisDbDeployDeployService $deployService */
@@ -167,7 +171,8 @@ class MelisDbDeployDiscoveryService implements ServiceLocatorAwareInterface
         $deltaPath = 'dbdeploy' . $sp . self::CACHE_DELTAS_PATH . $sp;
 
         if (!file_exists($deltaPath)) {
-            mkdir($deltaPath, 750);
+            mkdir($deltaPath, 0777);
+			chmod($dbDeployPath, 0777);
         }
 
         $deltas = [];
