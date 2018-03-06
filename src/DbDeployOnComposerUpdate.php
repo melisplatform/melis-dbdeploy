@@ -2,12 +2,14 @@
 
 namespace MelisDbDeploy;
 
+use Composer\Script\Event;
+use Composer\Installer\PackageEvent;
 use MelisDbDeploy\Service\MelisDbDeployDeployService;
 class DbDeployOnComposerUpdate
 {
     const CACHE_DELTAS_PATH = 'data';
 
-    public static function process()
+    public static function postUpdate(Event $event)
     {
 
         $composer = $_SERVER['DOCUMENT_ROOT'] . '/../composer.json';
