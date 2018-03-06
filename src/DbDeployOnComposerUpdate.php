@@ -32,6 +32,12 @@ class DbDeployOnComposerUpdate
         print 'Executing DB Deploy' . PHP_EOL;
 
         $service = new MelisDbDeployDeployService();
+
+        if(false === $service->isInstalled())
+            $service->install();
+
+        ini_set('memory_limit', '-1');
+        set_time_limit(0);
         $service->applyDeltaPath(realpath('dbdeploy' . DIRECTORY_SEPARATOR . self::CACHE_DELTAS_PATH));
         print 'Done.' . PHP_EOL;
 

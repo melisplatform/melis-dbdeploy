@@ -131,7 +131,7 @@ class MelisDbDeployDeployService implements ServiceLocatorAwareInterface
             if(file_exists($filename)) {
                 @unlink($filename);
             }
-                
+
         }catch(\Exception $e) {
 			$path     = $_SERVER['DOCUMENT_ROOT'].'/../dbdeploy/';
 			$logError = false;
