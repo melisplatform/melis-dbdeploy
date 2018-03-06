@@ -65,9 +65,4 @@ class DbDeployOnComposerUpdate
             copy($file, $dbDeployPath . basename($file));
         }
     }
-
-    private static function toCamelCase($value)
-    {
-        return str_replace('-','', mb_convert_case($value, MB_CASE_TITLE, 'UTF-8'));
-    }
 }
