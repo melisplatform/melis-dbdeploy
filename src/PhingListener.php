@@ -46,7 +46,9 @@ class PhingListener implements BuildListener
 
     public function messageLogged(BuildEvent $event)
     {
-        $this->stdout($event->getMessage());
+        $enableLogging = false;
+        if($enableLogging)
+            $this->stdout($event->getMessage());
     }
 
     /**

@@ -185,6 +185,8 @@ class MelisDbDeployDeployService implements ServiceLocatorAwareInterface
             $this->dbDeployTask->setUndoOutputFile(static::OUTPUT_FILENAME_UNDO);
             $this->dbDeployTask->setOwningTarget($target);
             $this->dbDeployTask->setCheckAll(true);
+            $this->dbDeployTask->setAppliedBy('MelisDbDeploy');
+
         }
 
     }

@@ -11,8 +11,7 @@ class DbDeployOnComposerUpdate
 
     public static function postUpdate(Event $event)
     {
-
-        $composer = $_SERVER['DOCUMENT_ROOT'] . '/../composer.json';
+        $composer = $_SERVER['PWD'] . '/composer.json';
 
         if(!file_exists($composer))
             return;
@@ -27,22 +26,21 @@ class DbDeployOnComposerUpdate
         foreach($repos as $idx => $repo) {
             // execute on this module
             $repo       = pathinfo($repo['url'], PATHINFO_FILENAME);
-            echo self::copyDeltasFromPackage($repo);
+            self::copyDeltasFromPackage($repo);
         }
 
         print 'Executing DB Deploy' . PHP_EOL;
 
         $service = new MelisDbDeployDeployService();
         $service->applyDeltaPath(realpath('dbdeploy' . DIRECTORY_SEPARATOR . self::CACHE_DELTAS_PATH));
-
         print 'Done.' . PHP_EOL;
 
     }
 
     private static function copyDeltasFromPackage($module)
     {
-        $melisVendorPath = $_SERVER['DOCUMENT_ROOT'] . '/../vendor/melisplatform/'.$module;
-        $dbDeployPath    = $_SERVER['DOCUMENT_ROOT'] . '/../dbdeploy/data/';
+        $melisVendorPath = $_SERVER['PWD'] . '/vendor/melisplatform/'.$module;
+        $dbDeployPath    = $_SERVER['PWD'] . '/dbdeploy/data/';
 
         if(!file_exists($melisVendorPath))
             return;
@@ -57,11 +55,10 @@ class DbDeployOnComposerUpdate
         if(!file_exists($packageDbdeployFiles))
             return null;
 
-        echo $packageDbdeployFiles;
         $packageDbdeployFiles = glob($packageDbdeployFiles.'*.sql');
 
         foreach($packageDbdeployFiles as $file) {
-            print 'Copying ' . basename($file) . ' => ' . $dbDeployPath . basename($file) . PHP_EOL;
+            print 'Copying ' . $module.'/'.basename($file) . ' => ' . $dbDeployPath . basename($file) . PHP_EOL;
             copy($file, $dbDeployPath . basename($file));
         }
     }
