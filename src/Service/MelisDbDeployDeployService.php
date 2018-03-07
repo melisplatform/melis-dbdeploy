@@ -86,6 +86,24 @@ class MelisDbDeployDeployService implements ServiceLocatorAwareInterface
         $this->db->query($sqlCreateTableChangelog, Adapter::QUERY_MODE_EXECUTE);
     }
 
+    public function changeLogCount()
+    {
+        try {
+            $data = $this->db->query(
+                'SELECT COUNT(`change_number`) as total from `changelog`',
+                Adapter::QUERY_MODE_EXECUTE
+            )->current();
+
+            if($data)
+                return (int) $data->total;
+
+        } catch (\PDOException $invalidQueryException) {
+            return 0;
+        }
+
+        return 0;
+    }
+
     public function applyDeltaPath($deltaPath)
     {
 

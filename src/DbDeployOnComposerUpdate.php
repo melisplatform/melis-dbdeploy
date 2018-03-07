@@ -3,7 +3,6 @@
 namespace MelisDbDeploy;
 
 use Composer\Script\Event;
-use Composer\Installer\PackageEvent;
 use MelisDbDeploy\Service\MelisDbDeployDeployService;
 class DbDeployOnComposerUpdate
 {
@@ -18,7 +17,7 @@ class DbDeployOnComposerUpdate
 
         $composer = json_decode(file_get_contents($composer), true);
 
-        if(!isset($composer['repositories']) && !count($composer['repositories']))
+        if(!isset($composer['repositories']) || !count($composer['repositories']))
             return;
 
         $repos = $composer['repositories'];
@@ -30,16 +29,41 @@ class DbDeployOnComposerUpdate
         }
 
         print 'Executing DB Deploy' . PHP_EOL;
+        if(self::execDbDeploy()) {
+            print 'Done.' . PHP_EOL;
+        }
 
+    }
+
+    private static function execDbDeploy()
+    {
+        ini_set('memory_limit', '-1');
+        set_time_limit(0);
         $service = new MelisDbDeployDeployService();
 
         if(false === $service->isInstalled())
             $service->install();
 
-        ini_set('memory_limit', '-1');
-        set_time_limit(0);
         $service->applyDeltaPath(realpath('dbdeploy' . DIRECTORY_SEPARATOR . self::CACHE_DELTAS_PATH));
-        print 'Done.' . PHP_EOL;
+
+        if($service->changeLogCount() === self::getTotalDataFile()) {
+            return true;
+        }
+        else {
+            self::execDbDeploy();
+        }
+    }
+
+    private static function getTotalDataFile()
+    {
+        $dbDeployPath = $_SERVER['PWD'] . '/dbdeploy/data/';
+
+        if(!file_exists($dbDeployPath))
+            return 0;
+
+        $files = glob($dbDeployPath.'*.sql');
+
+        return count($files);
 
     }
 
