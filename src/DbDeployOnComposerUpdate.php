@@ -10,7 +10,8 @@ class DbDeployOnComposerUpdate
 
     public static function postUpdate(Event $event)
     {
-        $composer = $_SERVER['PWD'] . '/composer.json';
+        $docRoot  = self::docRoot();
+        $composer = $docRoot . 'composer.json';
 
         if(!file_exists($composer))
             return;
@@ -56,7 +57,8 @@ class DbDeployOnComposerUpdate
 
     private static function getTotalDataFile()
     {
-        $dbDeployPath = $_SERVER['PWD'] . '/dbdeploy/data/';
+        $docRoot      = self::docRoot();
+        $dbDeployPath = $docRoot . '/dbdeploy/data/';
 
         if(!file_exists($dbDeployPath))
             return 0;
@@ -69,8 +71,9 @@ class DbDeployOnComposerUpdate
 
     private static function copyDeltasFromPackage($module)
     {
-        $melisVendorPath = $_SERVER['PWD'] . '/vendor/melisplatform/'.$module;
-        $dbDeployPath    = $_SERVER['PWD'] . '/dbdeploy/data/';
+        $docRoot         = self::docRoot();
+        $melisVendorPath = $docRoot . 'vendor/melisplatform/'.$module;
+        $dbDeployPath    = $docRoot . 'dbdeploy/data/';
 
         if(!file_exists($melisVendorPath))
             return;
@@ -91,5 +94,22 @@ class DbDeployOnComposerUpdate
             print 'Copying ' . $module.'/'.basename($file) . ' => ' . $dbDeployPath . basename($file) . PHP_EOL;
             copy($file, $dbDeployPath . basename($file));
         }
+    }
+
+    private static function docRoot()
+    {
+        $docRoot = dirname(__DIR__);
+        $parts   = explode(DIRECTORY_SEPARATOR, $docRoot);
+
+        $path = null;
+        foreach($parts as $idx => $part) {
+            $path .= $part . DIRECTORY_SEPARATOR;
+            if($part == 'vendor')
+                break;
+        }
+
+        $path = str_replace(DIRECTORY_SEPARATOR.'vendor', '', $path);
+
+        return $path;
     }
 }
