@@ -72,10 +72,12 @@ class MelisDbDeployDiscoveryService implements ServiceLocatorAwareInterface
         $dbDeployPath = $_SERVER['DOCUMENT_ROOT'] . '/../dbdeploy';
         if(!file_exists($dbDeployPath)) {
             mkdir($dbDeployPath);
-            chmod($dbDeployPath, 0777);
+            if(!is_writable($dbDeployPath) || !is_readable($dbDeployPath))
+                chmod($dbDeployPath, 0777);
         }
 		else {
-			chmod($dbDeployPath, 0777);
+            if(!is_writable($dbDeployPath) || !is_readable($dbDeployPath))
+			    @chmod($dbDeployPath, 0777);
 		}
 		
 
@@ -106,7 +108,6 @@ class MelisDbDeployDiscoveryService implements ServiceLocatorAwareInterface
 
         $deltas = [];
 
-
         foreach ($packages as $package) {
             $vendor = explode('/', $package->getName(), 2);
 
@@ -116,15 +117,9 @@ class MelisDbDeployDiscoveryService implements ServiceLocatorAwareInterface
 
             $extra = $package->getExtra();
 
-            // if (!in_array('dbdeploy', $extra) || true !== $extra['dbdeploy']) {
-                // continue;
-            // }
-
             if(!is_null($module) && !empty($module)) {
                 if(trim($extra['module-name']) === trim($module)) {
-                    //if (in_array('dbdeploy', $extra) && true === $extra['dbdeploy']) {
-                        $deltas = static::copyDeltasFromPackage($package, $vendorDir);
-                    //}
+                    $deltas = static::copyDeltasFromPackage($package, $vendorDir);
                     break;
                 }
             }
