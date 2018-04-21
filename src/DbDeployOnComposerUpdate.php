@@ -18,15 +18,16 @@ class DbDeployOnComposerUpdate
 
         $composer = json_decode(file_get_contents($composer), true);
 
-        if(!isset($composer['repositories']) || !count($composer['repositories']))
+        if(!isset($composer['require']) || !count($composer['require']))
             return;
 
-        $repos = $composer['repositories'];
+        $repos = $composer['require'];
 
-        foreach($repos as $idx => $repo) {
+        foreach($repos as $repo => $version) {
             // execute on this module
-            $repo       = pathinfo($repo['url'], PATHINFO_FILENAME);
-            self::copyDeltasFromPackage($repo);
+            $path       = pathinfo($repo, PATHINFO_FILENAME);
+
+            self::copyDeltasFromPackage($path);
         }
 
         print 'Executing DB Deploy' . PHP_EOL;
