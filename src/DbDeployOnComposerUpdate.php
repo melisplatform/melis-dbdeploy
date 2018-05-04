@@ -4,7 +4,16 @@ use Composer\Script\Event;
 use MelisDbDeploy\Service\MelisDbDeployDeployService;
 class DbDeployOnComposerUpdate
 {
+    /**
+     * @var CACHE_DELTAS_PATH - Path where dbdeploy sql files to be stored
+     */
     const CACHE_DELTAS_PATH = 'data';
+
+    /**
+     * @var int
+     */
+    private static $count = 1;
+
     public static function postUpdate(Event $event)
     {
         $docRoot  = self::docRoot();
@@ -20,11 +29,19 @@ class DbDeployOnComposerUpdate
             $path       = pathinfo($repo, PATHINFO_FILENAME);
             self::copyDeltasFromPackage($path);
         }
+
+        print "\r\n";
         print 'Executing DB Deploy' . PHP_EOL;
+
         if(self::execDbDeploy()) {
-            print 'Done.' . PHP_EOL;
+            print 'Done!' . PHP_EOL;
         }
     }
+
+    /**
+     * Executes the dbdeploy sql files inside self::CACHE_DELTAS_PATH
+     * @return bool
+     */
     private static function execDbDeploy()
     {
         ini_set('memory_limit', '-1');
@@ -40,6 +57,11 @@ class DbDeployOnComposerUpdate
             self::execDbDeploy();
         }
     }
+
+    /**
+     * Returns the total count of dbdeploy sql files in self::CACHE_DELTAS_PATH
+     * @return int
+     */
     private static function getTotalDataFile()
     {
         $docRoot      = self::docRoot();
@@ -47,8 +69,15 @@ class DbDeployOnComposerUpdate
         if(!file_exists($dbDeployPath))
             return 0;
         $files = glob($dbDeployPath.'*.sql');
+
         return count($files);
     }
+
+    /**
+     * Copy the dbdeploy sql files inside self::CACHE_DELTAS_PATH
+     * @param $module
+     * @return null|void
+     */
     private static function copyDeltasFromPackage($module)
     {
         $docRoot         = self::docRoot();
@@ -63,11 +92,20 @@ class DbDeployOnComposerUpdate
         if(!file_exists($packageDbdeployFiles))
             return null;
         $packageDbdeployFiles = glob($packageDbdeployFiles.'*.sql');
-        foreach($packageDbdeployFiles as $file) {
-            print 'Copying ' . $module.'/'.basename($file) . ' => ' . $dbDeployPath . basename($file) . PHP_EOL;
+
+        foreach($packageDbdeployFiles as $idx => $file) {
+            $moduleName = self::toModuleName($module);
+            print  '(' . (self::$count) . ') ' . $moduleName . "\r\n";
+            print '     - Copying ' . $moduleName.'/'.basename($file) . ' => ' . $dbDeployPath . basename($file) . PHP_EOL;
             copy($file, $dbDeployPath . basename($file));
+            self::$count++;
         }
     }
+
+    /**
+     * Returns the full path of the current directory (used only in command-line)
+     * @return mixed|null|string
+     */
     private static function docRoot()
     {
         $docRoot = dirname(__DIR__);
@@ -79,6 +117,21 @@ class DbDeployOnComposerUpdate
                 break;
         }
         $path = str_replace(DIRECTORY_SEPARATOR.'vendor', '', $path);
+
         return $path;
+    }
+
+    /**
+     * Converts a kebab cased string into CamelCased format
+     * @param $module
+     * @return array|string
+     */
+    private static function toModuleName($module)
+    {
+        $module = str_replace('-', ' ', $module);
+        $module = explode(' ', ucwords($module));
+        $module = implode('', $module);
+
+        return $module;
     }
 }
