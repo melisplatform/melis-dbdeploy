@@ -120,7 +120,10 @@ class MelisDbDeployDeployService implements ServiceLocatorAwareInterface
             ));
         }
 
-        $this->execute($deltaPath);
+        try {
+            $this->execute($deltaPath);
+        } catch(\Exception $e) {}
+
 
         chdir($cwd);
 
