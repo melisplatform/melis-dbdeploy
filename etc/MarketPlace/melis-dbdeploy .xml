@@ -1,0 +1,13 @@
+<melis-dbdeploy>
+	<package_info>
+		<mp_title>Melis Dbdeploy</mp_title>
+		<mp_subtitle>This module handles db hooks from composer and automatic update of the DB from updates and marketplace deployments</mp_subtitle>
+		<mp_description>
+			<![CDATA[
+				<p>This module handles db hooks from composer and automatic update of the DB from updates and marketplace deployments</p>
+			]]>
+		</mp_description>
+		<mp_maintainers>melisplatform</mp_maintainers>
+		<mp_group>Melis Core</mp_group>
+	</package_info>
+</melis-dbdeploy>
