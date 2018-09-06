@@ -146,7 +146,7 @@ class MelisDbDeployDeployService implements ServiceLocatorAwareInterface
 
         try {
             $execTask->main();
-	    sleep(5)
+	    sleep(5);
             if(file_exists($filename)) {
                 @unlink($filename);
             }
