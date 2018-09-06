@@ -55,6 +55,7 @@ class DbDeployOnComposerUpdate
         }
         else {
             self::execDbDeploy();
+            sleep(2);
         }
     }
 
