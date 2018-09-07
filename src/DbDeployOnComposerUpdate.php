@@ -42,7 +42,7 @@ class DbDeployOnComposerUpdate
             if (self::execDbDeploy()) {
                 print 'Done!' . PHP_EOL;
             }
-        } catch(\Exception $e) {
+        } catch (\Exception $e) {
 
         }
 
@@ -137,7 +137,6 @@ class DbDeployOnComposerUpdate
         } else {
             try {
                 self::execDbDeploy();
-                sleep(2);
             } catch (\Exception $e) {
             }
         }
