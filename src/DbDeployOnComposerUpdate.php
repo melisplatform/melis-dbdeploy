@@ -138,6 +138,7 @@ class DbDeployOnComposerUpdate
             try {
                 self::execDbDeploy();
             } catch (\Exception $e) {
+                print $e->getMessage() . PHP_EOL;
             }
         }
     }
