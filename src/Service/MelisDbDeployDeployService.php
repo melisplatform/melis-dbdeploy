@@ -88,7 +88,7 @@ class MelisDbDeployDeployService implements ServiceLocatorAwareInterface
             $this->dbDeployTask->setCheckAll(true);
             $this->dbDeployTask->setAppliedBy('MelisDbDeploy');
 
-            $this->db->query('Set Global max_connections=500;');
+            //$this->db->query('Set Global max_connections=500;');
 
         }
 
