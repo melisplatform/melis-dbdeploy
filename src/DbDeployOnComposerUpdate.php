@@ -94,11 +94,14 @@ class DbDeployOnComposerUpdate
         $packageDbdeployFiles = glob($packageDbdeployFiles . '*.sql');
 
         foreach ($packageDbdeployFiles as $idx => $file) {
-            $moduleName = self::toModuleName($module);
-            print  '(' . (self::$count) . ') ' . $moduleName . "\r\n";
-            print '     - Copying ' . $moduleName . '/' . basename($file) . ' => ' . $dbDeployPath . basename($file) . PHP_EOL;
-            copy($file, $dbDeployPath . basename($file));
-            self::$count++;
+            if (!file_exists($dbDeployPath . basename($file))) {
+                $moduleName = self::toModuleName($module);
+                print  '(' . (self::$count) . ') ' . $moduleName . "\r\n";
+                print '     - Copying ' . $moduleName . '/' . basename($file) . ' => ' . $dbDeployPath . basename($file) . PHP_EOL;
+                copy($file, $dbDeployPath . basename($file));
+                self::$count++;
+            }
+
         }
     }
 
@@ -138,7 +141,7 @@ class DbDeployOnComposerUpdate
             try {
                 self::execDbDeploy();
             } catch (\Exception $e) {
-                print $e->getMessage() . PHP_EOL;
+                return true;
             }
         }
     }
