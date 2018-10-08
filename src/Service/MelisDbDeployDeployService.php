@@ -9,14 +9,13 @@
 
 namespace MelisDbDeploy\Service;
 
-use MelisDbDeploy\ConfigFileNotFoundException;
 use MelisDbDeploy\PhingListener;
 use Zend\Db\Adapter\Adapter;
 use Zend\ServiceManager\ServiceLocatorAwareInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
+
 class MelisDbDeployDeployService implements ServiceLocatorAwareInterface
 {
-    public $serviceLocator;
     /**
      *
      * The tablename to use from the database for storing all changes
@@ -24,12 +23,11 @@ class MelisDbDeployDeployService implements ServiceLocatorAwareInterface
      *
      * @var string
      */
-    const TABLE_NAME            = 'changelog';
-
-    const OUTPUT_FILENAME       = 'melisplatform-dbdeploy.sql';
-    const OUTPUT_FILENAME_UNDO  = 'melisplatform-dbdeploy-reverse.sql';
-    const DRIVER                = 'pdo';
-
+    const TABLE_NAME = 'changelog';
+    const OUTPUT_FILENAME = 'melisplatform-dbdeploy.sql';
+    const OUTPUT_FILENAME_UNDO = 'melisplatform-dbdeploy-reverse.sql';
+    const DRIVER = 'pdo';
+    public $serviceLocator;
     /**
      * @var Adapter
      */
@@ -49,122 +47,6 @@ class MelisDbDeployDeployService implements ServiceLocatorAwareInterface
     public function __construct()
     {
         $this->prepare();
-    }
-
-    public function setServiceLocator(ServiceLocatorInterface $sl)
-    {
-        $this->serviceLocator = $sl;
-
-        return $this;
-    }
-
-    public function getServiceLocator()
-    {
-        return $this->serviceLocator;
-    }
-
-    public function isInstalled()
-    {
-        try {
-            $this->db->query(
-                'describe ' . self::TABLE_NAME,
-                Adapter::QUERY_MODE_EXECUTE
-            );
-        } catch (\PDOException $invalidQueryException) {
-            return false;
-        }
-
-        return true;
-    }
-
-    public function install()
-    {
-        $sqlCreateTableChangelog = file_get_contents(dirname(dirname(__DIR__))
-            . DIRECTORY_SEPARATOR . 'data' . DIRECTORY_SEPARATOR
-            . 'changelog.sql'
-        );
-        $this->db->query($sqlCreateTableChangelog, Adapter::QUERY_MODE_EXECUTE);
-    }
-
-    public function changeLogCount()
-    {
-        try {
-            $data = $this->db->query(
-                'SELECT COUNT(`change_number`) as total from `changelog`',
-                Adapter::QUERY_MODE_EXECUTE
-            )->current();
-
-            if($data)
-                return (int) $data->total;
-
-        } catch (\PDOException $invalidQueryException) {
-            return 0;
-        }
-
-        return 0;
-    }
-
-    public function applyDeltaPath($deltaPath)
-    {
-
-        \Phing::startup();
-
-        $cwd = getcwd();
-        $workingDirectory = $cwd . DIRECTORY_SEPARATOR . 'dbdeploy';
-        chdir($workingDirectory);
-
-        if (!file_exists($workingDirectory)) {
-            throw new \Exception(sprintf(
-                'The directory %s must exist to store temporary database migration file',
-                $workingDirectory
-            ));
-        }
-
-        $this->execute($deltaPath);
-
-        chdir($cwd);
-
-        \Phing::shutdown();
-    }
-
-    protected function execute($path)
-    {
-        $this->dbDeployTask->setDir($path);
-        $this->dbDeployTask->main();
-
-        $filename = realpath(static::OUTPUT_FILENAME);
-
-        $file = new \PhingFile($filename);
-
-        $execTask = new \PDOSQLExecTask();
-        $execTask->setProject($this->dbDeployTask->getProject());
-        $execTask->setOwningTarget($this->dbDeployTask->getOwningTarget());
-        $execTask->setUrl($this->appConfig['db']['dsn']);
-        $execTask->setUserid($this->appConfig['db']['username']);
-        $execTask->setPassword($this->appConfig['db']['password']);
-        $execTask->setSrc($file);
-
-        try {
-            $execTask->main();
-	          sleep(5);
-            if(file_exists($filename)) {
-                @unlink($filename);
-            }
-
-        }catch(\Exception $e) {
-			$path     = $_SERVER['DOCUMENT_ROOT'].'/../dbdeploy/';
-			$logError = false;
-
-			if($logError) {
-                if(file_exists($path)) {
-                    file_put_contents($path . 'dbdeploy_error.log', date('Y-m-d H:i:s') . ': '. $e->getMessage() . PHP_EOL . PHP_EOL, FILE_APPEND);
-                }
-            }
-
-			
-        }
-
-
     }
 
     protected function prepare()
@@ -206,7 +88,131 @@ class MelisDbDeployDeployService implements ServiceLocatorAwareInterface
             $this->dbDeployTask->setCheckAll(true);
             $this->dbDeployTask->setAppliedBy('MelisDbDeploy');
 
+            //$this->db->query('Set Global max_connections=500;');
+
         }
+
+    }
+
+    public function getServiceLocator()
+    {
+        return $this->serviceLocator;
+    }
+
+    public function setServiceLocator(ServiceLocatorInterface $sl)
+    {
+        $this->serviceLocator = $sl;
+
+        return $this;
+    }
+
+    public function isInstalled()
+    {
+        try {
+            $this->db->query(
+                'describe ' . self::TABLE_NAME,
+                Adapter::QUERY_MODE_EXECUTE
+            );
+        } catch (\PDOException $invalidQueryException) {
+            return false;
+        }
+
+        return true;
+    }
+
+    public function install()
+    {
+        $sqlCreateTableChangelog = file_get_contents(dirname(dirname(__DIR__))
+            . DIRECTORY_SEPARATOR . 'data' . DIRECTORY_SEPARATOR
+            . 'changelog.sql'
+        );
+        $this->db->query($sqlCreateTableChangelog, Adapter::QUERY_MODE_EXECUTE);
+    }
+
+    public function changeLogCount()
+    {
+        try {
+            $data = $this->db->query(
+                'SELECT COUNT(`change_number`) as total from `changelog`',
+                Adapter::QUERY_MODE_EXECUTE
+            )->current();
+
+            if ($data) {
+                return (int) $data->total;
+            }
+
+        } catch (\PDOException $invalidQueryException) {
+            return 0;
+        }
+
+        return 0;
+    }
+
+    public function applyDeltaPath($deltaPath)
+    {
+
+        \Phing::startup();
+
+        $cwd = getcwd();
+        $workingDirectory = $cwd . DIRECTORY_SEPARATOR . 'dbdeploy';
+        chdir($workingDirectory);
+
+        if (!file_exists($workingDirectory)) {
+            throw new \Exception(sprintf(
+                'The directory %s must exist to store temporary database migration file',
+                $workingDirectory
+            ));
+        }
+
+        try {
+            $this->execute($deltaPath);
+            $this->db->getDriver()->getConnection()->disconnect();
+        } catch (\Exception $e) {
+
+        }
+
+
+        chdir($cwd);
+
+        \Phing::shutdown();
+    }
+
+    protected function execute($path)
+    {
+        $this->dbDeployTask->setDir($path);
+        $this->dbDeployTask->main();
+
+        $filename = realpath(static::OUTPUT_FILENAME);
+
+        $file = new \PhingFile($filename);
+
+        $execTask = new \PDOSQLExecTask();
+        $execTask->setProject($this->dbDeployTask->getProject());
+        $execTask->setOwningTarget($this->dbDeployTask->getOwningTarget());
+        $execTask->setUrl($this->appConfig['db']['dsn']);
+        $execTask->setUserid($this->appConfig['db']['username']);
+        $execTask->setPassword($this->appConfig['db']['password']);
+        $execTask->setSrc($file);
+
+        try {
+            $execTask->main();
+            if (file_exists($filename)) {
+                @unlink($filename);
+            }
+
+        } catch (\Exception $e) {
+            $path = $_SERVER['DOCUMENT_ROOT'] . '/../dbdeploy/';
+            $logError = false;
+
+            if ($logError) {
+                if (file_exists($path)) {
+                    file_put_contents($path . 'dbdeploy_error.log', date('Y-m-d H:i:s') . ': ' . $e->getMessage() . PHP_EOL . PHP_EOL, FILE_APPEND);
+                }
+            }
+
+
+        }
+
 
     }
 }
