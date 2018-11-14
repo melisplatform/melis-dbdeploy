@@ -43,7 +43,7 @@ class DbDeployOnComposerUpdate
                 print 'Done!' . PHP_EOL;
             }
         } catch (\Exception $e) {
-
+            print $e->getMessage();
         }
 
     }
@@ -92,17 +92,29 @@ class DbDeployOnComposerUpdate
             return null;
         }
         $packageDbdeployFiles = glob($packageDbdeployFiles . '*.sql');
+        $moduleName = self::toModuleName($module);
 
+        print  "* $moduleName\r\n";
+        $count = 1;
+        $allExists = false;
         foreach ($packageDbdeployFiles as $idx => $file) {
             if (!file_exists($dbDeployPath . basename($file))) {
-                $moduleName = self::toModuleName($module);
-                print  '(' . (self::$count) . ') ' . $moduleName . "\r\n";
-                print '     - Copying ' . $moduleName . '/' . basename($file) . ' => ' . $dbDeployPath . basename($file) . PHP_EOL;
+                $count = $idx + 1;
+                print "    ($count) " . 'Publishing ' . $moduleName . '/' . basename($file) . ' => ' . $dbDeployPath . basename($file) . PHP_EOL;
                 copy($file, $dbDeployPath . basename($file));
                 self::$count++;
+                $allExists = false;
+            } else {
+                $allExists = true;
             }
 
         }
+
+        if ($allExists) {
+            print  "    Nothing to publish" . PHP_EOL;
+        }
+
+        print PHP_EOL;
     }
 
     /**
@@ -139,9 +151,9 @@ class DbDeployOnComposerUpdate
             return true;
         } else {
             try {
-                self::execDbDeploy();
+                return self::execDbDeploy();
             } catch (\Exception $e) {
-                return true;
+                print $e->getMessage();
             }
         }
     }
