@@ -168,9 +168,8 @@ class MelisDbDeployDeployService implements ServiceLocatorAwareInterface
             $this->execute($deltaPath);
             $this->db->getDriver()->getConnection()->disconnect();
         } catch (\Exception $e) {
-
+            print $e->getMessage();
         }
-
 
         chdir($cwd);
 
