@@ -54,7 +54,8 @@ class MelisDbDeployDeployService implements ServiceLocatorAwareInterface
         $configurations = glob("config/autoload/platforms/*.php");
 
         if (!empty($configurations)) {
-            $path = current($configurations);
+            $path = count($configurations) > 1 ? "config/autoload/platforms/" . getenv('MELIS_PLATFORM') . '.php'
+                : current($configurations);
             $appConfig = include $path;
             $this->appConfig = $appConfig;
 
