@@ -101,7 +101,7 @@ class MelisDbDeployDiscoveryService implements ServiceLocatorAwareInterface
             $extra = $package->getExtra();
 
             if (!is_null($module) && !empty($module)) {
-                if (trim($extra['module-name']) === trim($module)) {
+                if (isset($extra['module-name']) && trim($extra['module-name']) === trim($module)) {
                     $deltas = static::copyDeltasFromPackage($package, $vendorDir);
                     break;
                 }
