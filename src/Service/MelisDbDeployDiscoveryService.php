@@ -11,8 +11,8 @@ namespace MelisDbDeploy\Service;
 
 use Composer\Composer;
 use Composer\Package\PackageInterface;
-use Zend\ServiceManager\ServiceLocatorAwareInterface;
-use Zend\ServiceManager\ServiceLocatorInterface;
+use Laminas\ServiceManager\ServiceLocatorAwareInterface;
+use Laminas\ServiceManager\ServiceLocatorInterface;
 
 class MelisDbDeployDiscoveryService implements ServiceLocatorAwareInterface
 {

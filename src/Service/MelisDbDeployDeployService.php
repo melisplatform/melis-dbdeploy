@@ -10,9 +10,9 @@
 namespace MelisDbDeploy\Service;
 
 use MelisDbDeploy\PhingListener;
-use Zend\Db\Adapter\Adapter;
-use Zend\ServiceManager\ServiceLocatorAwareInterface;
-use Zend\ServiceManager\ServiceLocatorInterface;
+use Laminas\Db\Adapter\Adapter;
+use Laminas\ServiceManager\ServiceLocatorAwareInterface;
+use Laminas\ServiceManager\ServiceLocatorInterface;
 
 class MelisDbDeployDeployService implements ServiceLocatorAwareInterface
 {

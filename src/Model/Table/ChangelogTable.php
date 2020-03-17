@@ -9,7 +9,7 @@
 
 namespace MelisDbDeploy\Model\Table;
 
-use Zend\Db\TableGateway\TableGateway;
+use Laminas\Db\TableGateway\TableGateway;
 use MelisDbDeploy\Model\Table\MelisGenericTable;
 class ChangelogTable extends MelisGenericTable
 {

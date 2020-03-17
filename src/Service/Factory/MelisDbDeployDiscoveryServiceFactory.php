@@ -10,8 +10,8 @@
 namespace MelisDbDeploy\Service\Factory;
 
 use MelisDbDeploy\Service\MelisDbDeployDiscoveryService;
-use Zend\ServiceManager\ServiceLocatorInterface;
-use Zend\ServiceManager\FactoryInterface;
+use Laminas\ServiceManager\ServiceLocatorInterface;
+use Laminas\ServiceManager\FactoryInterface;
 
 class MelisDbDeployDiscoveryServiceFactory implements FactoryInterface
 {
