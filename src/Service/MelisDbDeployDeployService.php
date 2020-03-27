@@ -11,10 +11,9 @@ namespace MelisDbDeploy\Service;
 
 use MelisDbDeploy\PhingListener;
 use Laminas\Db\Adapter\Adapter;
-use Laminas\ServiceManager\ServiceLocatorAwareInterface;
-use Laminas\ServiceManager\ServiceLocatorInterface;
+use Laminas\ServiceManager\ServiceManager;
 
-class MelisDbDeployDeployService implements ServiceLocatorAwareInterface
+class MelisDbDeployDeployService
 {
     /**
      *
@@ -43,10 +42,24 @@ class MelisDbDeployDeployService implements ServiceLocatorAwareInterface
      */
     protected $appConfig;
 
+    /**
+     * @var ServiceManager
+     */
+    public $serviceManager;
 
     public function __construct()
     {
         $this->prepare();
+    }
+
+    public function setServiceManager(ServiceManager $service)
+    {
+        $this->serviceManager = $service;
+    }
+
+    public function getServiceManager()
+    {
+        return $this->serviceManager;
     }
 
     protected function prepare()
@@ -59,9 +72,10 @@ class MelisDbDeployDeployService implements ServiceLocatorAwareInterface
             $appConfig = include $path;
             $this->appConfig = $appConfig;
 
-            $this->db = new Adapter($appConfig['db'] + [
-                    'driver' => static::DRIVER,
-                ]);
+            // Overriding database connection driver to PDO
+            $this->db = new Adapter(array_merge($appConfig['db'], [
+                'driver' => static::DRIVER,
+            ]));
 
             $cwd = getcwd();
             set_include_path("$cwd/vendor/phing/phing/classes/");
@@ -93,18 +107,6 @@ class MelisDbDeployDeployService implements ServiceLocatorAwareInterface
 
         }
 
-    }
-
-    public function getServiceLocator()
-    {
-        return $this->serviceLocator;
-    }
-
-    public function setServiceLocator(ServiceLocatorInterface $sl)
-    {
-        $this->serviceLocator = $sl;
-
-        return $this;
     }
 
     public function isInstalled()

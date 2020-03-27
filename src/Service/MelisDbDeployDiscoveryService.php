@@ -11,25 +11,36 @@ namespace MelisDbDeploy\Service;
 
 use Composer\Composer;
 use Composer\Package\PackageInterface;
-use Laminas\ServiceManager\ServiceLocatorAwareInterface;
-use Laminas\ServiceManager\ServiceLocatorInterface;
+use Laminas\ServiceManager\ServiceManager;
 
-class MelisDbDeployDiscoveryService implements ServiceLocatorAwareInterface
+class MelisDbDeployDiscoveryService
 {
     const VENDOR = 'melisplatform';
     const CACHE_DELTAS_PATH = 'data';
-    /**
-     * @var ServiceManager
-     */
-    public $serviceLocator;
+
     /**
      * @var Composer
      */
     protected $composer;
 
+    /**
+     * @var ServiceManager
+     */
+    public $serviceManager;
+
     public function __construct($composer)
     {
         $this->setComposer($composer);
+    }
+
+    public function setServiceManager(ServiceManager $service)
+    {
+        $this->serviceManager = $service;
+    }
+
+    public function getServiceManager()
+    {
+        return $this->serviceManager;
     }
 
     /**
@@ -55,7 +66,7 @@ class MelisDbDeployDiscoveryService implements ServiceLocatorAwareInterface
 
 
         /** @var MelisDbDeployDeployService $deployService */
-        $deployService = $this->getServiceLocator()->get('MelisDbDeployDeployService');
+        $deployService = $this->getServiceManager()->get('MelisDbDeployDeployService');
 
         if (false === $deployService->isInstalled()) {
             $deployService->install();
@@ -63,18 +74,6 @@ class MelisDbDeployDiscoveryService implements ServiceLocatorAwareInterface
 
         $this->copyDeltas($module);
         $deployService->applyDeltaPath(realpath('dbdeploy' . DIRECTORY_SEPARATOR . self::CACHE_DELTAS_PATH));
-    }
-
-    public function getServiceLocator()
-    {
-        return $this->serviceLocator;
-    }
-
-    public function setServiceLocator(ServiceLocatorInterface $sl)
-    {
-        $this->serviceLocator = $sl;
-
-        return $this;
     }
 
     /**

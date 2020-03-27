@@ -9,20 +9,17 @@
 
 namespace MelisDbDeploy\Service\Factory;
 
-use MelisDbDeploy\Service\MelisDbDeployDiscoveryService;
-use Laminas\ServiceManager\ServiceLocatorInterface;
-use Laminas\ServiceManager\FactoryInterface;
+use Interop\Container\ContainerInterface;
 
-class MelisDbDeployDiscoveryServiceFactory implements FactoryInterface
+class MelisDbDeployDiscoveryServiceFactory
 {
-    public function createService(ServiceLocatorInterface $sl)
+    public function __invoke(ContainerInterface $container, $requestedName)
     {
-        $moduleSvc = $sl->get('MelisAssetManagerModulesService');
+        $moduleSvc = $container->get('MelisAssetManagerModulesService');
         $composer  = $moduleSvc->getComposer();
 
-        $service   = new MelisDbDeployDiscoveryService($composer);
-        $service->setServiceLocator($sl);
-
-        return $service;
+        $instance = new $requestedName($composer);
+        $instance->setServiceManager($container);
+        return $instance;
     }
 }

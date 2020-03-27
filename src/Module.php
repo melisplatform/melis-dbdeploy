@@ -13,30 +13,30 @@ use Laminas\ServiceManager\ServiceManager;
 use Laminas\Stdlib\ArrayUtils;
 class Module
 {
-    public function init(ModuleManager $mm)
-    {
-    }
     public function getConfig()
     {
-        $config = array();
-        $configFiles = array(
+        $config = [];
+        $configFiles = [
             include __DIR__ . '/../config/module.config.php',
             include __DIR__ . '/../config/diagnostic.config.php',
-        );
+        ];
+
         foreach ($configFiles as $file) {
             $config = ArrayUtils::merge($config, $file);
         }
+
         return $config;
     }
+
     public function getAutoloaderConfig()
     {
-        return array(
-            'Laminas\Loader\StandardAutoloader' => array(
-                'namespaces' => array(
+        return [
+            'Laminas\Loader\StandardAutoloader' => [
+                'namespaces' => [
                     __NAMESPACE__ => __DIR__ . '/src/' . __NAMESPACE__,
-                ),
-            ),
-        );
+                ],
+            ],
+        ];
     }
     /**
      * Trigger the processing of discovery patch and deploy sql migration
