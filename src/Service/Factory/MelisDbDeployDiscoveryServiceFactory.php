@@ -9,7 +9,7 @@
 
 namespace MelisDbDeploy\Service\Factory;
 
-use Interop\Container\ContainerInterface;
+use Psr\Container\ContainerInterface;
 
 class MelisDbDeployDiscoveryServiceFactory
 {
