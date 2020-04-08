@@ -9,11 +9,13 @@
 
 namespace MelisDbDeploy\Service;
 
+use MelisCore\Service\MelisServiceManager;
 use MelisDbDeploy\PhingListener;
 use Laminas\Db\Adapter\Adapter;
 use Laminas\ServiceManager\ServiceManager;
+use Laminas\ServiceManager\Factory\InvokableFactory;
 
-class MelisDbDeployDeployService
+class MelisDbDeployDeployService extends MelisServiceManager
 {
     /**
      *
@@ -26,7 +28,7 @@ class MelisDbDeployDeployService
     const OUTPUT_FILENAME = 'melisplatform-dbdeploy.sql';
     const OUTPUT_FILENAME_UNDO = 'melisplatform-dbdeploy-reverse.sql';
     const DRIVER = 'pdo';
-    public $serviceLocator;
+
     /**
      * @var Adapter
      */
@@ -42,24 +44,9 @@ class MelisDbDeployDeployService
      */
     protected $appConfig;
 
-    /**
-     * @var ServiceManager
-     */
-    public $serviceManager;
-
     public function __construct()
     {
         $this->prepare();
-    }
-
-    public function setServiceManager(ServiceManager $service)
-    {
-        $this->serviceManager = $service;
-    }
-
-    public function getServiceManager()
-    {
-        return $this->serviceManager;
     }
 
     protected function prepare()
@@ -94,7 +81,7 @@ class MelisDbDeployDeployService
 
             $this->dbDeployTask = new \DbDeployTask();
             $this->dbDeployTask->setProject($project);
-            $this->dbDeployTask->setUrl($appConfig['db']['dsn']);
+            $this->dbDeployTask->setUrl(sprintf('mysql:dbname=%s;host=%s;charset=utf8', [$appConfig['db']['database'], $appConfig['db']['hostname']]));
             $this->dbDeployTask->setUserId($appConfig['db']['username']);
             $this->dbDeployTask->setPassword($appConfig['db']['password']);
             $this->dbDeployTask->setOutputFile(static::OUTPUT_FILENAME);
@@ -191,7 +178,7 @@ class MelisDbDeployDeployService
         $execTask = new \PDOSQLExecTask();
         $execTask->setProject($this->dbDeployTask->getProject());
         $execTask->setOwningTarget($this->dbDeployTask->getOwningTarget());
-        $execTask->setUrl($this->appConfig['db']['dsn']);
+        $execTask->setUrl(sprintf('mysql:dbname=%s;host=%s;charset=utf8', [$appConfig['db']['database'], $appConfig['db']['hostname']]));
         $execTask->setUserid($this->appConfig['db']['username']);
         $execTask->setPassword($this->appConfig['db']['password']);
         $execTask->setSrc($file);

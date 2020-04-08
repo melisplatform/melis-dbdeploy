@@ -12,8 +12,9 @@ namespace MelisDbDeploy\Service;
 use Composer\Composer;
 use Composer\Package\PackageInterface;
 use Laminas\ServiceManager\ServiceManager;
+use MelisCore\Service\MelisServiceManager;
 
-class MelisDbDeployDiscoveryService
+class MelisDbDeployDiscoveryService extends MelisServiceManager
 {
     const VENDOR = 'melisplatform';
     const CACHE_DELTAS_PATH = 'data';
@@ -24,23 +25,15 @@ class MelisDbDeployDiscoveryService
     protected $composer;
 
     /**
-     * @var ServiceManager
+     * @param ServiceManager $service
      */
-    public $serviceManager;
-
-    public function __construct($composer)
-    {
-        $this->setComposer($composer);
-    }
-
     public function setServiceManager(ServiceManager $service)
     {
         $this->serviceManager = $service;
-    }
 
-    public function getServiceManager()
-    {
-        return $this->serviceManager;
+        $moduleSvc = $service->get('MelisAssetManagerModulesService');
+        $composer  = $moduleSvc->getComposer();
+        $this->setComposer($composer);
     }
 
     /**
