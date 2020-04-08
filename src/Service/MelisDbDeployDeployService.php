@@ -81,7 +81,7 @@ class MelisDbDeployDeployService extends MelisServiceManager
 
             $this->dbDeployTask = new \DbDeployTask();
             $this->dbDeployTask->setProject($project);
-            $this->dbDeployTask->setUrl(sprintf('mysql:dbname=%s;host=%s;charset=utf8', [$appConfig['db']['database'], $appConfig['db']['hostname']]));
+            $this->dbDeployTask->setUrl(sprintf('mysql:dbname=%s;host=%s;charset=utf8', $appConfig['db']['database'], $appConfig['db']['hostname']));
             $this->dbDeployTask->setUserId($appConfig['db']['username']);
             $this->dbDeployTask->setPassword($appConfig['db']['password']);
             $this->dbDeployTask->setOutputFile(static::OUTPUT_FILENAME);
@@ -178,7 +178,7 @@ class MelisDbDeployDeployService extends MelisServiceManager
         $execTask = new \PDOSQLExecTask();
         $execTask->setProject($this->dbDeployTask->getProject());
         $execTask->setOwningTarget($this->dbDeployTask->getOwningTarget());
-        $execTask->setUrl(sprintf('mysql:dbname=%s;host=%s;charset=utf8', [$appConfig['db']['database'], $appConfig['db']['hostname']]));
+        $execTask->setUrl(sprintf('mysql:dbname=%s;host=%s;charset=utf8', $appConfig['db']['database'], $appConfig['db']['hostname']));
         $execTask->setUserid($this->appConfig['db']['username']);
         $execTask->setPassword($this->appConfig['db']['password']);
         $execTask->setSrc($file);
