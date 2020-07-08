@@ -19,21 +19,14 @@ class DbDeployOnComposerUpdate
 
     public static function postUpdate(Event $event)
     {
-        $docRoot = self::docRoot();
-        $composer = $docRoot . 'composer.json';
-        if (!file_exists($composer)) {
-            return;
-        }
-        $composer = json_decode(file_get_contents($composer), true);
-        if (!isset($composer['require']) || !count($composer['require'])) {
-            return;
-        }
-        $repos = $composer['require'];
-        foreach ($repos as $repo => $version) {
-            // execute on this module
-            $path = pathinfo($repo, PATHINFO_FILENAME);
+        // Melis packages
+        $melisComposer = new \MelisComposerDeploy\MelisComposer();
+        $melisPackages = $melisComposer->getMelisPackages();
+
+        array_map(function($package) {
+            $path = pathinfo($package->name, PATHINFO_FILENAME);
             self::copyDeltasFromPackage($path);
-        }
+        }, $melisPackages);
 
         print "\r\n";
         print 'Executing DB Deploy' . PHP_EOL;
