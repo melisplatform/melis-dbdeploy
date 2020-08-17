@@ -8,7 +8,7 @@ chdir(__DIR__);
 $composer = new \Composer\Composer();
 
 $smConfig = include dirname(__DIR__) . DIRECTORY_SEPARATOR . 'config' . DIRECTORY_SEPARATOR . 'module.config.php';
-$serviceManager = new \Zend\ServiceManager\ServiceManager(new \Zend\Mvc\Service\ServiceManagerConfig($smConfig['service_manager']));
+$serviceManager = new \Laminas\ServiceManager\ServiceManager(new \Laminas\Mvc\Service\ServiceManagerConfig($smConfig['service_manager']));
 
 /** @var \MelisDbDeploy\Service\MelisDbDeployDiscoveryService $discovery */
 $discovery = $serviceManager->get('MelisDbDeployDiscoveryService');

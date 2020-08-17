@@ -7,16 +7,21 @@
  *
  */
 
+use MelisDbDeploy\Model\Table\ChangelogTable;
+use MelisDbDeploy\Service\Factory\MelisDbDeployDiscoveryServiceFactory;
+use MelisDbDeploy\Service\MelisDbDeployDeployService;
+use MelisDbDeploy\Service\MelisDbDeployDiscoveryService;
+use MelisDbDeploy\Model\Table\Factory\ChangelogTableFactory;
+use MelisCore\Model\Tables\Factory\AbstractTableGatewayFactory;
+
 return [
     'service_manager' => [
         'aliases' => [
-            'ChangelogTable' => 'MelisDbDeploy\Model\Table\ChangelogTable'
-        ],
-        'factories' => [
-            'MelisDbDeployDiscoveryService' => \MelisDbDeploy\Service\Factory\MelisDbDeployDiscoveryServiceFactory::class,
-            'MelisDbDeployDeployService' => MelisDbDeploy\Service\Factory\MelisDbDeployDeployServiceFactory::class,
-
-            'MelisDbDeploy\Model\Table\ChangelogTable' => MelisDbDeploy\Model\Table\Factory\ChangelogTableFactory::class,
+            // Services
+            'MelisDbDeployDeployService'            => MelisDbDeployDeployService::class,
+            'MelisDbDeployDiscoveryService'         => MelisDbDeployDiscoveryService::class,
+            // Model
+            'ChangelogTable'                        => ChangelogTable::class,
         ],
     ],
 ];

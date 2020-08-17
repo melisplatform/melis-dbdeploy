@@ -9,12 +9,13 @@
 
 namespace MelisDbDeploy\Service;
 
+use MelisCore\Service\MelisServiceManager;
 use MelisDbDeploy\PhingListener;
-use Zend\Db\Adapter\Adapter;
-use Zend\ServiceManager\ServiceLocatorAwareInterface;
-use Zend\ServiceManager\ServiceLocatorInterface;
+use Laminas\Db\Adapter\Adapter;
+use Laminas\ServiceManager\ServiceManager;
+use Laminas\ServiceManager\Factory\InvokableFactory;
 
-class MelisDbDeployDeployService implements ServiceLocatorAwareInterface
+class MelisDbDeployDeployService extends MelisServiceManager
 {
     /**
      *
@@ -27,7 +28,7 @@ class MelisDbDeployDeployService implements ServiceLocatorAwareInterface
     const OUTPUT_FILENAME = 'melisplatform-dbdeploy.sql';
     const OUTPUT_FILENAME_UNDO = 'melisplatform-dbdeploy-reverse.sql';
     const DRIVER = 'pdo';
-    public $serviceLocator;
+
     /**
      * @var Adapter
      */
@@ -42,7 +43,6 @@ class MelisDbDeployDeployService implements ServiceLocatorAwareInterface
      * @var Array
      */
     protected $appConfig;
-
 
     public function __construct()
     {
@@ -59,9 +59,13 @@ class MelisDbDeployDeployService implements ServiceLocatorAwareInterface
             $appConfig = include $path;
             $this->appConfig = $appConfig;
 
-            $this->db = new Adapter($appConfig['db'] + [
-                    'driver' => static::DRIVER,
-                ]);
+            $pdoDsn = sprintf('mysql:dbname=%s;host=%s;charset=utf8', $appConfig['db']['database'], $appConfig['db']['hostname']);
+
+            // Overriding database connection driver to PDO
+            $this->db = new Adapter(array_merge($appConfig['db'], [
+                'driver' => static::DRIVER,
+                'dsn' => $pdoDsn
+            ]));
 
             $cwd = getcwd();
             set_include_path("$cwd/vendor/phing/phing/classes/");
@@ -80,7 +84,7 @@ class MelisDbDeployDeployService implements ServiceLocatorAwareInterface
 
             $this->dbDeployTask = new \DbDeployTask();
             $this->dbDeployTask->setProject($project);
-            $this->dbDeployTask->setUrl($appConfig['db']['dsn']);
+            $this->dbDeployTask->setUrl($pdoDsn);
             $this->dbDeployTask->setUserId($appConfig['db']['username']);
             $this->dbDeployTask->setPassword($appConfig['db']['password']);
             $this->dbDeployTask->setOutputFile(static::OUTPUT_FILENAME);
@@ -93,18 +97,6 @@ class MelisDbDeployDeployService implements ServiceLocatorAwareInterface
 
         }
 
-    }
-
-    public function getServiceLocator()
-    {
-        return $this->serviceLocator;
-    }
-
-    public function setServiceLocator(ServiceLocatorInterface $sl)
-    {
-        $this->serviceLocator = $sl;
-
-        return $this;
     }
 
     public function isInstalled()
@@ -189,7 +181,7 @@ class MelisDbDeployDeployService implements ServiceLocatorAwareInterface
         $execTask = new \PDOSQLExecTask();
         $execTask->setProject($this->dbDeployTask->getProject());
         $execTask->setOwningTarget($this->dbDeployTask->getOwningTarget());
-        $execTask->setUrl($this->appConfig['db']['dsn']);
+        $execTask->setUrl(sprintf('mysql:dbname=%s;host=%s;charset=utf8', $this->appConfig['db']['database'], $this->appConfig['db']['hostname']));
         $execTask->setUserid($this->appConfig['db']['username']);
         $execTask->setPassword($this->appConfig['db']['password']);
         $execTask->setSrc($file);

@@ -9,13 +9,23 @@
 
 namespace MelisDbDeploy\Model\Table;
 
-use Zend\Db\TableGateway\TableGateway;
-use MelisDbDeploy\Model\Table\MelisGenericTable;
+use Laminas\Db\TableGateway\TableGateway;
+use MelisEngine\Model\Tables\MelisGenericTable;
+
 class ChangelogTable extends MelisGenericTable
 {
-    public function __construct(TableGateway $tableGateway)
+    /**
+     * Model table
+     */
+    const TABLE = 'changelog';
+
+    /**
+     * Table primary key
+     */
+    const PRIMARY_KEY = 'change_number';
+
+    public function __construct()
     {
-        parent::__construct($tableGateway);
-        $this->idField = 'change_number';
+        $this->idField = self::PRIMARY_KEY;
     }
 }
