@@ -20,7 +20,7 @@
 	},
 	"require": {
 		"php": "^7.3|^8.0",
-		"phing/phing": "~2.16.3"
+		"phing/phing": "3.0.0-RC3"
 	},
 	"autoload": {
 		"psr-4": {
