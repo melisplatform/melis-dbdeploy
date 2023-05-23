@@ -59,7 +59,7 @@ class MelisDbDeployDeployService extends MelisServiceManager
             $appConfig = include $path;
             $this->appConfig = $appConfig;
 
-            $pdoDsn = sprintf('mysql:dbname=%s;host=%s;charset=utf8', $appConfig['db']['database'], $appConfig['db']['hostname']);
+            $pdoDsn = sprintf('mysql:dbname=%s;host=%s;charset=utf8mb4', $appConfig['db']['database'], $appConfig['db']['hostname']);
 
             // Overriding database connection driver to PDO
             $this->db = new Adapter(array_merge($appConfig['db'], [
@@ -181,7 +181,7 @@ class MelisDbDeployDeployService extends MelisServiceManager
         $execTask = new \PDOSQLExecTask();
         $execTask->setProject($this->dbDeployTask->getProject());
         $execTask->setOwningTarget($this->dbDeployTask->getOwningTarget());
-        $execTask->setUrl(sprintf('mysql:dbname=%s;host=%s;charset=utf8', $this->appConfig['db']['database'], $this->appConfig['db']['hostname']));
+        $execTask->setUrl(sprintf('mysql:dbname=%s;host=%s;charset=utf8mb4', $this->appConfig['db']['database'], $this->appConfig['db']['hostname']));
         $execTask->setUserid($this->appConfig['db']['username']);
         $execTask->setPassword($this->appConfig['db']['password']);
         $execTask->setSrc($file);
