@@ -77,7 +77,7 @@ class DbDeployOnComposerUpdate
             return;
         }
         if (!file_exists($dbDeployPath)) {
-            mkdir($dbDeployPath, 0777, true);
+            mkdir($dbDeployPath, 0755, true);
         }
         // copy dbdeploy file
         $packageDbdeployFiles = $melisVendorPath . '/install/dbdeploy/';

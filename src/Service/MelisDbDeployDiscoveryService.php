@@ -157,7 +157,7 @@ class MelisDbDeployDiscoveryService extends MelisServiceManager
         $deltaPath = 'dbdeploy' . $sp . self::CACHE_DELTAS_PATH . $sp;
 
         if (!file_exists($_SERVER['DOCUMENT_ROOT'] . '/../' . $deltaPath)) {
-            mkdir($_SERVER['DOCUMENT_ROOT'] . '/../' . $deltaPath, 0777);
+            mkdir($_SERVER['DOCUMENT_ROOT'] . '/../' . $deltaPath, 0755);
             chmod($_SERVER['DOCUMENT_ROOT'] . '/../' . $deltaPath, 0777);
         }
 
