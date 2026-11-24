@@ -45,12 +45,8 @@ class MelisDbDeployDiscoveryService extends MelisServiceManager
     {
 
         // create dbdeploy folder if not existing
-        // SECURITY (audit DB-H1): never make the delta cache world-writable — every
-        // *.sql it contains is executed against the database with the platform's DB
-        // account, so a 0777 directory hands arbitrary SQL execution to any local
-        // user. 0755 is enough: the PHP user owns the directory it creates; on an
-        // inherited unreadable directory chmod only succeeds for its owner anyway,
-        // and the copy below then fails loudly instead of opening the door.
+        // The delta cache holds *.sql files executed against the database: created
+        // 0755, owned by the PHP user.
         $dbDeployPath = $_SERVER['DOCUMENT_ROOT'] . '/../dbdeploy';
         if (!file_exists($dbDeployPath)) {
             mkdir($dbDeployPath, 0755);
@@ -159,7 +155,7 @@ class MelisDbDeployDiscoveryService extends MelisServiceManager
         $deltaPath = 'dbdeploy' . $sp . self::CACHE_DELTAS_PATH . $sp;
 
         if (!file_exists($_SERVER['DOCUMENT_ROOT'] . '/../' . $deltaPath)) {
-            // SECURITY (audit DB-H1): 0755, never 0777 — see processing().
+            // 0755 — see processing().
             mkdir($_SERVER['DOCUMENT_ROOT'] . '/../' . $deltaPath, 0755);
         }
 
